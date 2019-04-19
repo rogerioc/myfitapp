@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.rogerio.myafitapp">
-    <uses-permission android:name="android.permission.INTERNET" />
+          package="com.rogerio.myfitapp">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <application
-            android:name=".MyFitApplication"
+            android:name="com.rogerio.myfitapp.MyFitApplication"
             android:allowBackup="true"
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
@@ -11,14 +13,19 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
         <activity
-                android:name=".MainActivity"
-                android:label="@string/title_activity_main"
+                android:name="com.rogerio.myfitapp.detailgoal.DetailGoalActivity"
+                android:label="@string/title_activity_detail_goal"
                 android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity
+                android:name="com.rogerio.myfitapp.MainActivity"
+                android:label="@string/title_activity_main"
+                android:theme="@style/AppTheme.NoActionBar">
+
         </activity>
     </application>
 

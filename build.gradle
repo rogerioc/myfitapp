@@ -8,7 +8,7 @@ buildscript {
         google()
         jcenter()
         maven { url "https://jitpack.io" }
-        maven { url 'https://maven.fabric.io/public' }
+        maven { url 'https://maven.google.com' }
 
     }
     dependencies {
@@ -24,7 +24,7 @@ allprojects {
         google()
         jcenter()
         maven { url "https://jitpack.io" }
-        maven { url 'https://maven.fabric.io/public' }
+        maven { url 'https://maven.google.com' }
 
     }
 }
@@ -50,7 +50,7 @@ ext {
     multidexVersion = '2.0.0'
     lifecycleVersion = '2.0.0'
     roomVersion = '2.0.0'
-
+    gmsVersion = "16.0.1"
     retrofitVersion = '2.4.0'
     okhttpVersion = '3.11.0'
     moshiVersion = '1.8.0'

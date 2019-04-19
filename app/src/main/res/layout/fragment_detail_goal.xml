@@ -1,0 +1,40 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tool="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.rogerio.myfitapp.detailgoal.DetailGoalViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        style="@style/MyFitStyle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/text_category"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/text_my_day_steps"
+            android:textSize="40dp"
+            tool:layout_constraintTop_toTopOf="parent"
+            />
+
+        <TextView
+            android:id="@+id/text_day"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="@{viewModel.model.steps}"
+            android:textSize="80dp"
+            tool:layout_constraintTop_toBottomOf="@+id/text_category"
+            tools:text="1" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

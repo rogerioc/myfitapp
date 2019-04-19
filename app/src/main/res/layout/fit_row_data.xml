@@ -3,19 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout">
-<data>
- <variable name="viewData" type="com.rogerio.myafitapp.presentation.model.FitItemViewEntity" />
-</data>
+
+    <data>
+
+        <variable
+            name="viewData"
+            type="com.rogerio.myfitapp.presentation.model.FitItemViewEntity" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="50dp">
 
         <TextView
             android:id="@+id/text_fit"
-            android:text="@{viewData.description}"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{viewData.description}"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="@tools:sample/full_names"
-            android:layout_height="wrap_content" />
+            tools:text="@tools:sample/full_names" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

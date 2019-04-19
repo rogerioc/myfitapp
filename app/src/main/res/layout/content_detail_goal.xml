@@ -1,9 +1,11 @@
 <fragment
         xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/fragment_start"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="com.rogerio.myfitapp.StartFitFragment"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-/>
+        tools:showIn="@layout/activity_detail_goal"
+        android:id="@+id/fragment_detail"
+        android:name="com.rogerio.myfitapp.detailgoal.DetailGoalFragment">
+</fragment>

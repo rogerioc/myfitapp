@@ -5,7 +5,7 @@
     <data>
         <variable
                 name="viewModel"
-                type="com.rogerio.myafitapp.presentation.MyFitViewModel"/>
+                type="com.rogerio.myfitapp.presentation.MyFitViewModel"/>
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
