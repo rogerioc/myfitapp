@@ -7,34 +7,108 @@
         <variable
             name="viewModel"
             type="com.rogerio.myfitapp.detailgoal.DetailGoalViewModel" />
+
+        <import type="android.view.View" />
+        <import type="com.rogerio.myfitapp.R" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         style="@style/MyFitStyle"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
+    <androidx.constraintlayout.widget.ConstraintLayout
+        style="@style/MyFitStyle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="@{viewModel.showFeature? View.GONE: View.VISIBLE}"
+        tools:visibility="gone"
+        >
         <TextView
-            android:id="@+id/text_category"
-            android:gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/text_my_day_steps"
-            android:textSize="40dp"
+            android:id="@+id/text_not_implemented"
             tool:layout_constraintTop_toTopOf="parent"
-            />
-
-        <TextView
-            android:id="@+id/text_day"
+            android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:textSize="40dp"
+            android:text="@string/text_sorry"
+            />
+        <TextView
+            android:id="@+id/text_not_smile"
+            tool:layout_constraintTop_toBottomOf="@id/text_not_implemented"
             android:gravity="center"
-            android:text="@{viewModel.model.steps}"
-            android:textSize="80dp"
-            tool:layout_constraintTop_toBottomOf="@+id/text_category"
-            tools:text="1" />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="50dp"
+            android:text=":("
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            style="@style/MyFitStyle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="@{viewModel.showFeature? View.VISIBLE: View.GONE}"
+            tools:visibility="visible">
+
+            <TextView
+                android:id="@+id/text_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="@{viewModel.model.description}"
+                android:textSize="35dp"
+                tool:layout_constraintTop_toTopOf="parent"
+                tools:text="Walk 500 steps a day" />
+
+            <TextView
+                android:id="@+id/text_category"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="@string/text_my_day_steps"
+                android:textSize="30dp"
+                tool:layout_constraintTop_toBottomOf="@+id/text_description" />
+
+            <TextView
+                android:id="@+id/text_day"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="@{viewModel.model.steps}"
+                android:textSize="80dp"
+                tool:layout_constraintTop_toBottomOf="@+id/text_category"
+                tools:text="1" />
+
+            <TextView
+                android:id="@+id/text_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                tool:layout_constraintEnd_toEndOf="parent"
+                tool:layout_constraintStart_toStartOf="parent"
+                tool:layout_constraintTop_toBottomOf="@+id/text_day"
+                tool:text="@{viewModel.message}"
+                tool:textColor="@{viewModel.colorMessage}"
+                tool:textParams="@{viewModel.value}"
+                tools:text="Yeap!! You do your goal. That'' was 500 Go to the next goal"
+                tools:textColor="@color/colorOk" />
+
+            <TextView
+                android:id="@+id/text_message_points"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorOk"
+                android:textSize="20dp"
+                android:visibility="@{viewModel.showMessage? View.VISIBLE: View.GONE}"
+                tool:layout_constraintEnd_toEndOf="parent"
+                tool:layout_constraintStart_toStartOf="parent"
+                tool:layout_constraintTop_toBottomOf="@+id/text_message"
+                tool:text="@{R.string.text_you_win}"
+                tool:textParams="@{viewModel.valuePoints}"
+                tools:text="You win 5 points" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

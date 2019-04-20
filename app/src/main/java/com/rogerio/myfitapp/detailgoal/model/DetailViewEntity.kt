@@ -5,5 +5,6 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class DetailViewEntity(
-        val steps: String
+        val steps: String,
+        val description: String = ""
 ) : Parcelable

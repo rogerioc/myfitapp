@@ -6,6 +6,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.fitness.Fitness
 import com.google.android.gms.fitness.data.*
 import com.google.android.gms.fitness.request.DataReadRequest
+import com.google.android.gms.fitness.request.DataUpdateRequest
 import com.google.android.gms.fitness.request.OnDataPointListener
 import com.google.android.gms.fitness.request.SensorRequest
 import com.google.android.gms.fitness.result.DataReadResponse
@@ -27,19 +28,23 @@ class FitDetailDataInteractor(
         private val repository: FitDataSource
 ) {
     private val NAME_DATA = "Step Count"
-    private var gs: GoogleSignInAccount?
+    //private var googleSignInAccount: GoogleSignInAccount?
+    private var hasData: Boolean = false
+
+    private var googleSignInAccount: GoogleSignInAccount?
 
     init {
-        gs = GoogleSignIn.getLastSignedInAccount(context)
+        googleSignInAccount = GoogleSignIn.getLastSignedInAccount(context)
+        Timber.tag("FitDetailDataInteractor")
     }
 
     fun getFitsList(): Single<List<FitItemViewEntity>> =
             repository.getFitList()
                     .map(ItemsToFitItemsViewEntityMapper())
 
-    fun getFitData(): PublishSubject<DataPoint> {
+    fun getSensonData(): PublishSubject<DataPoint> {
         val setDataPoint = PublishSubject.create<DataPoint>()
-        gs?.let {
+        googleSignInAccount?.let {
             val myStepCountListener = OnDataPointListener {
                 setDataPoint.onNext(it)
             }
@@ -55,7 +60,25 @@ class FitDetailDataInteractor(
         return setDataPoint
     }
 
-    fun getSensonData(): PublishSubject<DataReadResponse> {
+    fun day(): PublishSubject<DataSet> {
+        val setDaily = PublishSubject.create<DataSet>()
+        googleSignInAccount?.let {
+            Fitness.getHistoryClient(context, it)
+                    .readDailyTotal(DataType.TYPE_STEP_COUNT_DELTA)
+                    .addOnSuccessListener {
+                        setDaily.onNext(it)
+                    }.addOnFailureListener {
+                        setDaily.onError(it)
+                    }.addOnCompleteListener {
+                        setDaily.onComplete()
+                    }
+        } ?: run {
+            setDaily.onComplete()
+        }
+        return setDaily
+    }
+
+    fun getHistoryData(): PublishSubject<DataReadResponse> {
         val setDataHistory = PublishSubject.create<DataReadResponse>()
         val cal = Calendar.getInstance()
         cal.setTime(Date())
@@ -66,14 +89,15 @@ class FitDetailDataInteractor(
                 .aggregate(DataType.TYPE_STEP_COUNT_DELTA, DataType.AGGREGATE_STEP_COUNT_DELTA)
                 //.read(DataType.TYPE_STEP_COUNT_DELTA)
                 .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
-                .bucketByTime(1, TimeUnit.HOURS)
+                .bucketByActivityType(1, TimeUnit.SECONDS)
                 .build()
 
-        gs?.let {
+        googleSignInAccount?.let {
             Fitness.getHistoryClient(context, it)
                     .readData(readRequest)
                     .addOnSuccessListener(OnSuccessListener<DataReadResponse> {
                         Timber.d("onSuccess -> %s", it.toString())
+                        hasData = true
                         //viewModel.setHistorics(it)
                         setDataHistory.onNext(it)
                     })
@@ -85,7 +109,8 @@ class FitDetailDataInteractor(
                         //viewModel.setHistoricsCompleted()
                         setDataHistory.onComplete()
                     })
-
+        } ?: run {
+            setDataHistory.onComplete()
         }
         return setDataHistory
     }
@@ -111,16 +136,55 @@ class FitDetailDataInteractor(
 
         val point = dataSet.createDataPoint()
                 .setTimeInterval(startTime, endTime, TimeUnit.MILLISECONDS)
+
         point.getValue(Field.FIELD_STEPS).setInt(stepCountDelta)
         dataSet.add(point)
+        if (!hasData)
+            insertData(setDataPoint, dataSet)
+        else
+            updatetData(setDataPoint, dataSet, startTime, endTime)
 
-        gs?.let {
+        return setDataPoint
+    }
+
+    private fun updatetData(setDataPoint: PublishSubject<Void>, dataSet: DataSet, startTime: Long, endTime: Long) {
+        val request = DataUpdateRequest.Builder()
+                .setDataSet(dataSet)
+                .setTimeInterval(startTime, endTime, TimeUnit.MILLISECONDS)
+                .build()
+
+        googleSignInAccount?.let {
+            Fitness.getHistoryClient(context, it).updateData(request).addOnSuccessListener {
+                setDataPoint.onComplete()
+            }.addOnFailureListener {
+                setDataPoint.onError(it)
+            }.addOnCanceledListener {
+                setDataPoint.onError(Exception("Cancellled"))
+            }.addOnCompleteListener {
+                Timber.i("Save data Completable ")
+            }
+
+        } ?: run {
+            setDataPoint.onComplete()
+        }
+
+    }
+
+    private fun insertData(setDataPoint: PublishSubject<Void>, dataSet: DataSet) {
+
+        googleSignInAccount?.let {
             Fitness.getHistoryClient(context, it).insertData(dataSet).addOnSuccessListener {
                 setDataPoint.onComplete()
             }.addOnFailureListener {
                 setDataPoint.onError(it)
+            }.addOnCanceledListener {
+                setDataPoint.onError(Exception("Cancellled"))
+            }.addOnCompleteListener {
+                Timber.i("Save data Completable ")
             }
+
+        } ?: run {
+            setDataPoint.onComplete()
         }
-        return setDataPoint
     }
 }

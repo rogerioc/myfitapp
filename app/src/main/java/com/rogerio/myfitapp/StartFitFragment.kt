@@ -50,7 +50,6 @@ class StartFitFragment : Fragment() {
         fitlist.adapter = adapter
         adapter.selecteItem.observe(this, Observer {
             viewModel.selectedItem(it)
-            Toast.makeText(context,it.description,Toast.LENGTH_LONG).show()
         })
 
         viewModel.closeScreen.observe(this, Observer {

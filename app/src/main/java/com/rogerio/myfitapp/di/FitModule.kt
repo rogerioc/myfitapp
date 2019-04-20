@@ -11,8 +11,8 @@ import com.rogerio.myfitapp.services.repository.FitRepository
 import com.squareup.moshi.Moshi
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.util.concurrent.TimeUnit
@@ -23,7 +23,7 @@ private const val READ_TIMEOUT = 60L
 
 const val OK_HTTP_CLIENT = "okHttpClient"
 const val MOSHI = "moshi"
-
+const val GSI = "GSI"
 
 val fitModule = module {
     single {
@@ -34,6 +34,8 @@ val fitModule = module {
         )
     }
 
+
+
     single(named(MOSHI)) {
         getMoshi()
     }
@@ -41,6 +43,7 @@ val fitModule = module {
     single(named(OK_HTTP_CLIENT)) {
         getOkHttpClient()
     }
+
 
     factory<FitDataSource> {
         FitRepository(get())
@@ -50,18 +53,23 @@ val fitModule = module {
         FitInteractor(get())
     }
 
-    factory {
+    viewModel {
         MyFitViewModel(get())
     }
 
     factory {
-        FitDetailDataInteractor(androidContext())
+        FitDetailDataInteractor(androidContext(),get())
     }
 
-    factory {
+    viewModel {
         DetailGoalViewModel(get())
     }
 }
+
+//
+//private fun googleSignInAccount(context: Context): GoogleSignInAccount? {
+//    return GoogleSignIn.getLastSignedInAccount(context)
+//}
 
 
 private fun getMoshi(): Moshi {

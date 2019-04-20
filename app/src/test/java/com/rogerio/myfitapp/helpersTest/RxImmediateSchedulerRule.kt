@@ -1,4 +1,4 @@
-package com.rogerio.myfitapp.helpers
+package com.rogerio.myfitapp.helpersTest
 
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.plugins.RxJavaPlugins

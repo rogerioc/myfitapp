@@ -10,22 +10,12 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.fitness.Fitness
 import com.google.android.gms.fitness.FitnessOptions
 import com.google.android.gms.fitness.data.DataType
-import com.google.android.gms.fitness.request.DataReadRequest
-import com.google.android.gms.fitness.request.OnDataPointListener
-import com.google.android.gms.fitness.request.SensorRequest
-import com.google.android.gms.fitness.result.DataReadResponse
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.OnSuccessListener
 import com.rogerio.myfitapp.R
 import com.rogerio.myfitapp.databinding.FragmentDetailGoalBinding
+import com.rogerio.myfitapp.presentation.model.FitItemViewEntity
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import timber.log.Timber
-import java.util.*
-import java.util.concurrent.TimeUnit
 
 
 /**
@@ -34,12 +24,22 @@ import java.util.concurrent.TimeUnit
  */
 class DetailGoalFragment : Fragment() {
     private var fitnessOptions: FitnessOptions? = null
-    private var myStepCountListener: OnDataPointListener? = null
     private val GOOGLE_FIT_PERMISSIONS_REQUEST_CODE = 1
     val viewModel by viewModel<DetailGoalViewModel>()
 
     private lateinit var binding: FragmentDetailGoalBinding
-
+    companion object {
+        private val FIT_ITEM_ARG = "fitItemViewEntity"
+        fun newInstance(fitItemViewEntity: FitItemViewEntity?): DetailGoalFragment {
+            val fragment = DetailGoalFragment()
+            fitItemViewEntity?.let {
+                var args = Bundle()
+                args.putParcelable(FIT_ITEM_ARG, fitItemViewEntity)
+                fragment.arguments = args
+            }
+            return fragment
+        }
+    }
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
@@ -48,15 +48,17 @@ class DetailGoalFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_detail_goal, container, false)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
+        viewModel.setFitItemViewEntity(arguments?.getParcelable(FIT_ITEM_ARG))
         return binding.root
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.start()
         fitnessOptions = FitnessOptions.builder()
                 .addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
+                .addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_WRITE)
                 .addDataType(DataType.AGGREGATE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
+                .addDataType(DataType.AGGREGATE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_WRITE)
                 .build()
 
         fitnessOptions?.let {
@@ -72,53 +74,8 @@ class DetailGoalFragment : Fragment() {
             } else {
                viewModel.start()
             }
-
         }
     }
-
-//    private fun accessGoogleFit() {
-//        val cal = Calendar.getInstance()
-//        cal.setTime(Date())
-//        val endTime = cal.getTimeInMillis()
-//        cal.add(Calendar.YEAR, -1)
-//        val startTime = cal.getTimeInMillis()
-//        activity?.let { act ->
-//            myStepCountListener = OnDataPointListener {
-//                viewModel.setDataPoint(it)
-//            }
-//
-//            val readRequest = DataReadRequest.Builder()
-//                    .aggregate(DataType.TYPE_STEP_COUNT_DELTA, DataType.AGGREGATE_STEP_COUNT_DELTA)
-//                    //.read(DataType.TYPE_STEP_COUNT_DELTA)
-//                    .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
-//                    .bucketByTime(1, TimeUnit.HOURS)
-//                    .build()
-//
-//
-//            GoogleSignIn.getLastSignedInAccount(act)?.let {
-//                Fitness.getHistoryClient(act, it)
-//                        .readData(readRequest)
-//                        .addOnSuccessListener(OnSuccessListener<DataReadResponse> {
-//                            Timber.d("onSuccess -> %s", it.toString())
-//                            viewModel.setHistorics(it)
-//
-//
-//                        })
-//                        .addOnFailureListener(OnFailureListener { e -> viewModel.setHistoryFailed(e) })
-//                        .addOnCompleteListener(OnCompleteListener<DataReadResponse> { viewModel.setHistoricsCompleted() })
-//
-//
-//                Fitness.getSensorsClient(act, it)
-//                        .add(
-//                                SensorRequest.Builder()
-//                                        .setDataType(DataType.TYPE_STEP_COUNT_DELTA)
-//                                        .setSamplingRate(10, TimeUnit.SECONDS)  // sample once per minute
-//                                        .build(),
-//                                myStepCountListener!!
-//                        )
-//            }
-//        }
-//    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
