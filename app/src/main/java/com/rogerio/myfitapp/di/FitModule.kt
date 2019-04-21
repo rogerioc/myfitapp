@@ -58,7 +58,7 @@ val fitModule = module {
     }
 
     factory {
-        FitDetailDataInteractor(androidContext(),get())
+        FitDetailDataInteractor(androidContext())
     }
 
     viewModel {

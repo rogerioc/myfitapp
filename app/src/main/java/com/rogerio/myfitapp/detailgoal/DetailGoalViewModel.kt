@@ -44,8 +44,7 @@ class DetailGoalViewModel(
     }
 
 
-    fun start() {
-
+    private fun start() {
         if (fitItemViewEntity?.type.equals(STEP_TYPE)) {
             showFeature.set(true)
             isStarted = true
@@ -106,7 +105,6 @@ class DetailGoalViewModel(
         setNewStep()
     }
 
-
     private fun setNewData(detailViewEntity: DetailViewEntity) {
         model.set(detailViewEntity)
     }
@@ -123,7 +121,6 @@ class DetailGoalViewModel(
             Timber.i("\tEnd: " + dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)))
             for (field in dp.getDataType().getFields()) {
                 Timber.i("\tField: " + field.getName() + " Value: " + dp.getValue(field))
-
                 if (field.getName().equals(STEPS_NAME)) {
                     steps += dp.getValue(field).asInt()
                     setNewStep()
@@ -177,8 +174,7 @@ class DetailGoalViewModel(
 
     fun setFitItemViewEntity(fitItemViewEntity: FitItemViewEntity?) {
         this.fitItemViewEntity = fitItemViewEntity
-        if (!isStarted) {
-            start()
-        }
+        start()
+
     }
 }

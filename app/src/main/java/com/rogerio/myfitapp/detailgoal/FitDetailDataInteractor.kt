@@ -24,8 +24,7 @@ import java.util.concurrent.TimeUnit
 
 
 class FitDetailDataInteractor(
-        private val context: Context,
-        private val repository: FitDataSource
+        private val context: Context
 ) {
     private val NAME_DATA = "Step Count"
     //private var googleSignInAccount: GoogleSignInAccount?
@@ -38,9 +37,6 @@ class FitDetailDataInteractor(
         Timber.tag("FitDetailDataInteractor")
     }
 
-    fun getFitsList(): Single<List<FitItemViewEntity>> =
-            repository.getFitList()
-                    .map(ItemsToFitItemsViewEntityMapper())
 
     fun getSensonData(): PublishSubject<DataPoint> {
         val setDataPoint = PublishSubject.create<DataPoint>()

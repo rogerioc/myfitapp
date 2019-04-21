@@ -6,7 +6,7 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class FitItemViewEntity(
-        val reward: Reward,
+        val reward: RewardViewEntity,
         val goal: Int = 0,
         val description: String = "",
         val id: String = "",
