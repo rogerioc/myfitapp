@@ -1,6 +1,5 @@
 package com.rogerio.myfitapp
 
-
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -23,6 +22,7 @@ import com.rogerio.myfitapp.presentation.adapter.FitListAdapter
 import kotlinx.android.synthetic.main.fragment_main.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+
 /**
  * A simple [Fragment] subclass.
  *
@@ -38,7 +38,7 @@ class StartFitFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false)
-        binding.setLifecycleOwner(this)
+        binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
         return binding.root
@@ -55,16 +55,7 @@ class StartFitFragment : Fragment() {
         fitlist.adapter = adapter
         adapter.selecteItem.observe(this, Observer { fitItem ->
             fitnessOptions?.let {
-                if (!GoogleSignIn.hasPermissions(GoogleSignIn.getLastSignedInAccount(activity), it)) {
-                    activity?.let { it1 ->
-                        GoogleSignIn.requestPermissions(
-                                it1,
-                                GOOGLE_FIT_PERMISSIONS_REQUEST_CODE,
-                                GoogleSignIn.getLastSignedInAccount(it1),
-                                it
-                        )
-                    }
-                } else {
+                if (validPermissions(it)) {
                     viewModel.selectedItem(fitItem)
                 }
             }
@@ -85,19 +76,26 @@ class StartFitFragment : Fragment() {
                 .addDataType(DataType.AGGREGATE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_WRITE)
                 .build()
 
-        fitnessOptions?.let {
-            if (!GoogleSignIn.hasPermissions(GoogleSignIn.getLastSignedInAccount(activity), it)) {
-                activity?.let { it1 ->
-                    GoogleSignIn.requestPermissions(
-                            it1,
-                            GOOGLE_FIT_PERMISSIONS_REQUEST_CODE,
-                            GoogleSignIn.getLastSignedInAccount(it1),
-                            it
-                    )
-                }
-            }
+        fitnessOptions?.let { fit : FitnessOptions ->
+            validPermissions(fit)
         }
 
+    }
+
+    private fun validPermissions(fit: FitnessOptions) : Boolean {
+
+        val account = /*GoogleSignIn.getLastSignedInAccount(context)*/ GoogleSignIn.getAccountForExtension(context!!, fit)
+
+        if (!GoogleSignIn.hasPermissions(account, fit)) {
+            GoogleSignIn.requestPermissions(
+                this,
+                GOOGLE_FIT_PERMISSIONS_REQUEST_CODE,
+                account,
+                fit)
+
+            return false
+        }
+        return true
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
